@@ -17,7 +17,7 @@ export default function DestinationPanel({ destination, isOpen, onClose }: Props
     <>
       {/* Overlay */}
       <div 
-        className={`fixed inset-0 bg-black/40 backdrop-blur-sm z-40 transition-opacity duration-300 ${
+        className={`fixed inset-0 bg-black/40 backdrop-blur-sm z-[55] transition-opacity duration-300 ${
           isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         }`}
         onClick={onClose}
@@ -25,14 +25,32 @@ export default function DestinationPanel({ destination, isOpen, onClose }: Props
 
       {/* Side Panel */}
       <div 
-        className={`fixed top-0 right-0 h-[100dvh] w-[450px] max-w-[100vw] bg-surface shadow-2xl z-50 flex flex-col transform transition-transform duration-300 ease-in-out ${
+        className={`fixed top-0 right-0 h-[100dvh] w-[450px] max-w-[100vw] bg-surface shadow-2xl z-[60] flex flex-col transform transition-transform duration-300 ease-in-out ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
         {destination && (
           <>
+      {/* Top Navigation Bar */}
+      <div className="flex items-center justify-between px-4 py-3 bg-surface/95 backdrop-blur-sm border-b border-surface-variant shrink-0">
+        <button
+          onClick={onClose}
+          className="flex items-center gap-1.5 text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md py-1 px-2 rounded-lg hover:bg-surface-container"
+        >
+          <span className="material-symbols-outlined text-[20px]">arrow_back</span>
+          Back
+        </button>
+        <span className="font-label-sm text-label-sm text-on-surface-variant truncate max-w-[200px] text-center">{destination.hub_name}</span>
+        <button 
+          onClick={onClose}
+          className="w-9 h-9 rounded-full hover:bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors"
+        >
+          <span className="material-symbols-outlined text-[20px]">close</span>
+        </button>
+      </div>
+
       {/* Header Image */}
-      <div className="relative h-[250px] w-full shrink-0">
+      <div className="relative h-[220px] w-full shrink-0">
         {imageUrl ? (
           <img src={imageUrl} alt={destination.hub_name} className="w-full h-full object-cover" />
         ) : (
@@ -40,14 +58,6 @@ export default function DestinationPanel({ destination, isOpen, onClose }: Props
             <span className="material-symbols-outlined text-5xl text-outline/50">landscape</span>
           </div>
         )}
-        
-        {/* Close Button */}
-        <button 
-          onClick={onClose}
-          className="absolute top-4 right-4 w-10 h-10 rounded-full bg-black/40 text-white backdrop-blur-md flex items-center justify-center hover:bg-black/60 transition-colors"
-        >
-          <span className="material-symbols-outlined">close</span>
-        </button>
 
         {/* Badges Overlay */}
         <div className="absolute bottom-4 left-4 flex flex-col gap-2">
@@ -120,17 +130,17 @@ export default function DestinationPanel({ destination, isOpen, onClose }: Props
       </div>
 
       {/* Sticky Bottom Actions */}
-      <div className="p-5 border-t border-surface-variant bg-surface shrink-0 flex gap-3">
+      <div className="p-4 pb-[max(1rem,env(safe-area-inset-bottom))] border-t border-surface-variant bg-surface shrink-0 flex gap-3">
         <Link 
           to={`/plan?hub=${encodeURIComponent(destination.hub_name)}`}
-          className="flex-1 bg-primary text-on-primary font-label-lg text-label-lg py-3.5 rounded-xl flex justify-center items-center gap-2 hover:bg-primary/90 transition-colors cta-glow"
+          className="flex-1 bg-primary text-on-primary font-label-lg text-label-lg py-3.5 rounded-xl flex justify-center items-center gap-2 hover:opacity-90 transition-opacity cta-glow"
         >
           <span className="material-symbols-outlined text-[20px]">edit_calendar</span>
           Plan Trip Here
         </Link>
         <Link 
           to={`/chat?hub=${encodeURIComponent(destination.hub_name)}`}
-          className="bg-secondary-container text-on-secondary-container font-label-lg py-3.5 px-4 rounded-xl flex items-center justify-center hover:bg-secondary-container/80 transition-colors w-14 shrink-0"
+          className="bg-secondary-container text-on-secondary-container font-label-lg py-3.5 px-4 rounded-xl flex items-center justify-center hover:opacity-90 transition-opacity w-14 shrink-0"
           title="Ask AI about this place"
         >
           <span className="material-symbols-outlined text-[24px]">chat_bubble</span>

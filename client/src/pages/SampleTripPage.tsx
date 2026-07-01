@@ -425,7 +425,7 @@ export default function SampleTripPage() {
                     </span>
                   )}
                   {currentDay.transitDetails && (
-                    <span className="bg-primary/10 text-primary px-3 py-1 rounded-full font-label-sm text-label-sm flex items-center gap-1">
+                    <span className="bg-surface-container text-on-surface-variant px-3 py-1 rounded-full font-label-sm text-label-sm flex items-center gap-1">
                       <span className="material-symbols-outlined text-[16px]">
                         {getTransitIcon(currentDay.transitDetails.mode)}
                       </span>

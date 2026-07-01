@@ -68,14 +68,6 @@ export default function ChatInput({ onSend, disabled, placeholder }: Props) {
           </span>
         </button>
       </div>
-      <div className="max-w-3xl mx-auto flex gap-3 mt-2">
-        <div className="flex-1">
-          <p className="text-center font-label-sm text-label-sm text-on-surface-variant/40">
-            Press Enter to send · Shift+Enter for new line
-          </p>
-        </div>
-        <div className="w-12 flex-shrink-0 invisible" />
-      </div>
     </div>
   );
 }

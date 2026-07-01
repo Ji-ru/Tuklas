@@ -242,7 +242,7 @@ export default function ChatPage() {
       >
         <ChatInput
           onSend={handleSend}
-          placeholder="Ask about any Philippine destination or plan a trip…"
+          placeholder="Ask any PH destination or plan a trip"
           disabled={isTyping}
         />
       </motion.div>

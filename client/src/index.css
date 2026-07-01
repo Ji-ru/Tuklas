@@ -139,33 +139,36 @@
     --color-background: #131313;
     --color-on-background: #e5e2e1;
     --color-surface: #131313;
-    --color-surface-bright: #393939;
+    --color-surface-bright: #2a2a2a;
     --color-surface-container-lowest: #0e0e0e;
     --color-surface-container-low: #1c1b1b;
     --color-surface-container: #201f1f;
     --color-surface-container-high: #2a2a2a;
     --color-surface-container-highest: #353534;
     --color-on-surface: #e5e2e1;
-    --color-on-surface-variant: #bdc9c2;
+    --color-on-surface-variant: #c9c3b8;
     --color-surface-variant: #353534;
-    
-    --color-primary: #ffffff;
-    --color-on-primary: #003829;
-    --color-primary-container: #8ff6d0;
-    --color-on-primary-container: #007257;
-    
-    --color-secondary: #e9c349;
-    --color-on-secondary: #3c2f00;
-    --color-secondary-container: #af8d11;
-    --color-on-secondary-container: #342800;
-    
-    --color-tertiary: #ffffff;
-    --color-on-tertiary: #1a324c;
-    --color-tertiary-container: #d2e4ff;
-    --color-on-tertiary-container: #506682;
-    
-    --color-outline: #87948d;
-    --color-outline-variant: #3e4944;
+
+    /* Primary = Brand Yellow — used for CTAs, headings, and key accents */
+    --color-primary: #e9c349;
+    --color-on-primary: #1a1400;
+    --color-primary-container: #3a2e00;
+    --color-on-primary-container: #f0d470;
+
+    /* Secondary = Light Blue — used for secondary labels, badges, icons */
+    --color-secondary: #a7c8ff;
+    --color-on-secondary: #001b3c;
+    --color-secondary-container: #1f3a5c;
+    --color-on-secondary-container: #a7c8ff;
+
+    /* Tertiary = Warm Amber — used for dining/food activity badges */
+    --color-tertiary: #ffb77d;
+    --color-on-tertiary: #2f1500;
+    --color-tertiary-container: #3a2000;
+    --color-on-tertiary-container: #ffb77d;
+
+    --color-outline: #6b7069;
+    --color-outline-variant: #3a3a3a;
   }
 
   * {
@@ -221,12 +224,19 @@
     margin-top: -10px;
     box-shadow: 0 4px 12px rgba(0, 30, 64, 0.3);
   }
+  .dark input[type=range]::-webkit-slider-thumb {
+    background: #e9c349;
+    box-shadow: 0 4px 12px rgba(233, 195, 73, 0.35);
+  }
   input[type=range]::-webkit-slider-runnable-track {
     width: 100%;
     height: 4px;
     cursor: pointer;
     background: #e2e2e7;
     border-radius: 2px;
+  }
+  .dark input[type=range]::-webkit-slider-runnable-track {
+    background: #353534;
   }
 
   /* Glass panel for plan page form */
@@ -253,6 +263,15 @@
   .cta-glow:active {
     transform: translateY(1px);
     box-shadow: 0 4px 16px rgba(0, 30, 64, 0.2);
+  }
+  .dark .cta-glow {
+    box-shadow: 0 8px 32px rgba(233, 195, 73, 0.2);
+  }
+  .dark .cta-glow:hover {
+    box-shadow: 0 12px 40px rgba(233, 195, 73, 0.32);
+  }
+  .dark .cta-glow:active {
+    box-shadow: 0 4px 16px rgba(233, 195, 73, 0.15);
   }
 
   /* Scrollbar hide utility */
