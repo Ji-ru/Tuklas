@@ -44,13 +44,13 @@ export default function TravelGroupPicker({
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-lg mt-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-md md:gap-lg mt-3">
         {/* Left: Travel Companions + Group Size */}
         <div className="space-y-3">
           <p className="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">
             Travel Companions
           </p>
-          <div className="grid grid-cols-4 gap-2">
+          <div className="grid grid-cols-2 gap-2">
             {groups.map((g) => {
               const active = selectedGroup === g.id;
               return (

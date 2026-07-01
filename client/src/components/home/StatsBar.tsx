@@ -34,8 +34,8 @@ export default function StatsBar() {
         className="max-w-[1200px] mx-auto px-5 md:px-lg grid grid-cols-3 divide-x divide-outline-variant/30 text-center"
       >
         {stats.map((stat, idx) => (
-          <motion.div variants={item} key={idx} className="flex flex-col items-center justify-center">
-            <span className="font-display-md text-headline-lg md:text-display-md text-primary font-extrabold leading-none tracking-tight">
+          <motion.div variants={item} key={idx} className="flex flex-col items-center justify-center py-1 md:py-0">
+            <span className="font-display-md text-xl md:text-headline-lg text-primary font-extrabold leading-none tracking-tight">
               {stat.value}
             </span>
             <span className="font-label-sm text-[10px] md:text-label-sm text-on-surface-variant tracking-wider uppercase mt-1">

@@ -1,6 +1,6 @@
 export default function TravelInsurancePage() {
   return (
-    <div className="pt-[120px] pb-xl px-5 md:px-lg max-w-[800px] mx-auto w-full">
+    <div className="pt-[100px] md:pt-[120px] pb-24 md:pb-xl px-5 md:px-lg max-w-[800px] mx-auto w-full">
       <div className="text-center mb-12">
         <div className="w-16 h-16 bg-secondary-container text-on-secondary-container rounded-full flex items-center justify-center mx-auto mb-6">
           <span className="material-symbols-outlined text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>health_and_safety</span>

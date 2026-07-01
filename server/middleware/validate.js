@@ -35,7 +35,7 @@ export const generateSchema = z.object({
 export const chatSchema = z.object({
   messages: z.array(z.object({
     role: z.enum(['user', 'assistant']),
-    content: z.string().min(1).max(5000),
+    content: z.string().min(1).max(100000),
   })).min(1).max(50),
   sessionId: z.string().uuid().optional(),
 });

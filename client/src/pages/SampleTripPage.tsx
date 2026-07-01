@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import L from 'leaflet';
 import { sampleItinerary as fallbackItinerary } from '../lib/sampleItinerary';
 import PrintableItinerary from '../components/trip/PrintableItinerary';
@@ -45,6 +46,7 @@ function getTypeColors(type: string): string {
 }
 
 export default function SampleTripPage() {
+  const navigate = useNavigate();
   const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
   const [activeItem, setActiveItem] = useState<number | null>(null);
   const [pinnedItem, setPinnedItem] = useState<number | null>(null);
@@ -179,11 +181,11 @@ export default function SampleTripPage() {
         const marker = L.marker([lat, lng], { icon: defaultIcon })
           .addTo(map)
           .bindPopup(`
-            <div style="font-family: inherit; padding: 2px;">
-              <strong style="color: var(--color-primary, #003366); font-size: 14px;">${activity.title}</strong>
+            <div style="font-family: inherit; padding: 2px; min-width: 150px;">
+              <strong style="color: var(--color-primary, #003366); font-size: 14px; line-height: 1.3; display: block; margin-bottom: 4px;">${activity.title}</strong>
               <div style="font-size: 11px; color: #666; margin-top: 2px;">${activity.time} · ${activity.type}</div>
             </div>
-          `);
+          `, { minWidth: 160, maxWidth: 280, closeButton: false });
 
         markersMap[itemKey] = marker;
         coords.push([lat, lng]);
@@ -270,6 +272,7 @@ export default function SampleTripPage() {
     setActiveItem(null);
     setPinnedItem(null);
     setConfirmReset(false);
+    navigate('/plan');
   };
 
 
@@ -278,7 +281,7 @@ export default function SampleTripPage() {
     <>
       <PrintableItinerary itineraryData={itineraryData} />
       
-      <div className="print:hidden flex flex-col md:flex-row pt-[88px] h-screen bg-background text-on-surface overflow-hidden">
+      <div className="print:hidden flex flex-col md:flex-row pt-[72px] md:pt-[88px] h-[100dvh] bg-background text-on-surface overflow-hidden">
         {/* Sidebar — hidden on mobile when map is active */}
         <div className={`
           w-full md:w-2/5 lg:w-[40%] bg-surface flex flex-col h-full
@@ -289,49 +292,62 @@ export default function SampleTripPage() {
 
           {/* Itinerary Header */}
           <div className="px-5 md:px-md py-4 border-b border-surface-variant sticky top-0 bg-surface/95 backdrop-blur-sm z-20 space-y-3">
-            <div className="flex justify-between items-start gap-2">
-              <div className="flex-1 min-w-0">
-                <h1 className="font-headline-md text-headline-md text-primary mb-0.5">
-                  {itineraryData.title}
-                </h1>
-                <p className="font-body-md text-body-md text-on-surface-variant flex items-center gap-2">
-                  <span className="material-symbols-outlined text-[18px]">calendar_month</span>
+            <div className="flex flex-col gap-2">
+              <h1 className="font-headline-md text-[1.25rem] md:text-headline-md text-primary leading-tight">
+                {itineraryData.title}
+              </h1>
+              
+              <div className="flex flex-wrap justify-between items-center gap-3 w-full">
+                <p className="font-body-sm md:font-body-md text-xs md:text-sm text-on-surface-variant flex items-center gap-1.5">
+                  <span className="material-symbols-outlined text-[16px]">calendar_month</span>
                   {itineraryData.duration}
                 </p>
-              </div>
-              <div className="flex items-center gap-1 flex-shrink-0">
-                {/* Share */}
-                <button
-                  onClick={handleShare}
-                  className="w-9 h-9 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-primary transition-colors"
-                  title="Copy itinerary to clipboard"
-                >
-                  <span className="material-symbols-outlined text-[20px]">share</span>
-                </button>
-                {/* Print */}
-                <button
-                  onClick={handlePrint}
-                  className="w-9 h-9 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-primary transition-colors"
-                  title="Print itinerary"
-                >
-                  <span className="material-symbols-outlined text-[20px]">print</span>
-                </button>
-                {itinerary && (
+
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  {/* Share */}
                   <button
-                    onClick={handleResetClick}
-                    className={`font-label-md text-label-md flex items-center gap-1 px-2 py-1 rounded transition-all border ${
-                      confirmReset
-                        ? 'bg-error text-on-error border-error shadow-md animate-pulse'
-                        : 'text-on-surface-variant hover:text-error hover:border-error bg-surface-container-low border-outline-variant/30'
-                    }`}
-                    title={confirmReset ? 'Click again to confirm reset' : 'Clear saved itinerary'}
+                    onClick={handleShare}
+                    className="w-7 h-7 rounded-md flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-primary transition-colors"
+                    title="Copy itinerary to clipboard"
                   >
-                    <span className="material-symbols-outlined text-[16px]">
-                      {confirmReset ? 'warning' : 'refresh'}
-                    </span>
-                    {confirmReset ? 'Confirm?' : 'Reset'}
+                    <span className="material-symbols-outlined text-[16px]">share</span>
                   </button>
-                )}
+                  {/* Print */}
+                  <button
+                    onClick={handlePrint}
+                    className="w-7 h-7 rounded-md flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-primary transition-colors"
+                    title="Print itinerary"
+                  >
+                    <span className="material-symbols-outlined text-[16px]">print</span>
+                  </button>
+                  {itinerary && (
+                    <>
+                      <button
+                        onClick={handleResetClick}
+                        className={`font-label-sm text-[11px] md:text-xs flex items-center gap-1 px-2 py-1 rounded-md transition-all border ${
+                          confirmReset
+                            ? 'bg-error text-on-error border-error shadow-sm animate-pulse'
+                            : 'text-on-surface-variant hover:text-error hover:border-error bg-surface-container-low border-outline-variant/30'
+                        }`}
+                        title={confirmReset ? 'Click again to confirm reset' : 'Start over and create a new itinerary'}
+                      >
+                        <span className="material-symbols-outlined text-[14px]">
+                          {confirmReset ? 'warning' : 'refresh'}
+                        </span>
+                        <span className={confirmReset ? "inline" : "hidden sm:inline"}>{confirmReset ? 'Confirm?' : 'Start Over'}</span>
+                      </button>
+                      <button
+                        onClick={() => navigate('/chat', { state: { itineraryData } })}
+                        className="font-label-sm text-[11px] md:text-xs flex items-center gap-1 px-2.5 py-1 ml-0.5 rounded-full transition-all bg-primary text-on-primary hover:bg-primary/90 shadow-sm active:scale-95"
+                        title="Modify this itinerary with Tuklas AI"
+                      >
+                        <span className="material-symbols-outlined text-[14px]">auto_awesome</span>
+                        <span className="hidden md:inline">Update with AI</span>
+                        <span className="md:hidden">Update</span>
+                      </button>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -391,7 +407,7 @@ export default function SampleTripPage() {
                       setActiveItem(null);
                       setPinnedItem(null);
                     }}
-                    className={`py-1 px-3.5 rounded-full font-label-md text-label-md whitespace-nowrap transition-all border ${
+                    className={`py-1 px-3 md:px-3.5 rounded-full font-label-md text-xs md:text-label-md whitespace-nowrap transition-all border ${
                       activeDayIndex === idx
                         ? 'bg-secondary text-on-secondary border-secondary shadow-sm font-bold'
                         : 'bg-surface-container-low text-on-surface-variant border-outline-variant/20 hover:bg-surface-container'
@@ -406,13 +422,13 @@ export default function SampleTripPage() {
 
           {/* Day Activities List */}
           <div className="p-5 md:p-md flex-1">
-            <div className="mb-6 bg-surface-container-low p-4 rounded-xl border border-surface-variant/40 space-y-3">
+            <div className="mb-4 md:mb-6 bg-surface-container-low p-3 md:p-4 rounded-xl border border-surface-variant/40 space-y-2 md:space-y-3">
               <div className="flex items-center justify-between gap-4 flex-wrap">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-bold font-label-md text-label-md">
                     {currentDay.dayNumber}
                   </div>
-                  <h2 className="font-headline-md text-headline-md text-primary leading-tight font-bold">
+                  <h2 className="font-headline-md text-base md:text-headline-md text-primary leading-tight font-bold">
                     Day {currentDay.dayNumber}: {currentDay.dayTitle || 'Activities'}
                   </h2>
                 </div>
@@ -529,7 +545,7 @@ export default function SampleTripPage() {
                 <p className="font-body-md text-on-surface-variant">No activities scheduled for this day.</p>
               )}
             </div>
-            <div className="h-24 md:h-8" />
+            <div className="h-28 md:h-8" />
           </div>
 
           {/* Empty State CTA (Shown when no user itinerary exists) */}
@@ -582,7 +598,7 @@ export default function SampleTripPage() {
           </div>
 
           {/* Map Legend */}
-          <div className="absolute bottom-6 right-6 bg-surface/90 backdrop-blur-md border border-outline-variant/30 rounded-xl p-4 z-10 w-52 shadow-lg">
+          <div className="hidden md:block absolute bottom-6 right-6 bg-surface/90 backdrop-blur-md border border-outline-variant/30 rounded-xl p-4 z-10 w-52 shadow-lg">
             <h4 className="font-label-md text-label-md text-primary mb-3 font-bold">Activity Types</h4>
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-2">

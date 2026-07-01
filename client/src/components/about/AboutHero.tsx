@@ -19,7 +19,7 @@ export default function AboutHero() {
       viewport={{ once: true, margin: "0px 0px -100px 0px" }}
       className="text-center max-w-[768px] mx-auto space-y-6 pt-lg px-5 md:px-lg"
     >
-      <motion.h1 variants={item} className="font-display-lg text-display-lg text-primary tracking-tight leading-tight">
+      <motion.h1 variants={item} className="font-display-lg text-[2rem] md:text-display-lg text-primary tracking-tight leading-tight">
         Our Mission: To Make Every Island Moment Count.
       </motion.h1>
       <motion.p variants={item} className="font-body-lg text-body-lg text-on-surface-variant">

@@ -88,7 +88,7 @@ export default function ExplorePage() {
   };
 
   return (
-    <div className="min-h-screen bg-background pt-[88px] pb-24 md:pb-12 relative overflow-hidden">
+    <div className="min-h-[100dvh] bg-background pt-[88px] pb-24 relative overflow-hidden">
       {/* Hero Header */}
       <motion.section 
         initial="hidden"
@@ -97,19 +97,19 @@ export default function ExplorePage() {
         variants={{ hidden: {}, show: { transition: { staggerChildren: 0.1 } } }}
         className="bg-surface-container-low border-b border-surface-variant pt-12 pb-16 px-5 text-center"
       >
-        <motion.h1 variants={item} className="font-display-lg text-display-lg text-primary mb-4">Discover the Philippines</motion.h1>
-        <motion.p variants={item} className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto mb-8">
+        <motion.h1 variants={item} className="font-display-lg text-[2rem] leading-tight md:text-display-lg text-primary mb-3 md:mb-4">Discover the Philippines</motion.h1>
+        <motion.p variants={item} className="font-body-lg text-[0.95rem] leading-6 md:text-body-lg text-on-surface-variant max-w-2xl mx-auto mb-6 md:mb-8">
           Explore curated hubs across the archipelago. From bustling cityscapes to hidden island paradises, find your next unforgettable journey.
         </motion.p>
         {/* Search Bar */}
         <motion.div variants={item} className="relative max-w-2xl mx-auto mt-6">
-          <span className="material-symbols-outlined absolute left-5 top-1/2 -translate-y-1/2 text-on-surface-variant/60 text-[26px]">search</span>
+          <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/60 text-[22px] md:text-[26px]">search</span>
           <input
             type="text"
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             placeholder="Search destinations, regions…"
-            className="w-full pl-14 pr-12 py-4 rounded-[2rem] border-2 border-outline-variant bg-surface text-on-surface font-body-lg text-lg focus:outline-none focus:ring-4 focus:ring-primary/20 focus:border-primary placeholder:text-on-surface-variant/50 shadow-md hover:shadow-lg transition-all"
+            className="w-full pl-11 pr-10 py-3 md:pl-14 md:pr-12 md:py-4 rounded-[2rem] border-2 border-outline-variant bg-surface text-on-surface font-body-lg text-base md:text-lg focus:outline-none focus:ring-4 focus:ring-primary/20 focus:border-primary placeholder:text-on-surface-variant/50 shadow-md hover:shadow-lg transition-all"
           />
           {searchQuery && (
             <button
@@ -146,7 +146,7 @@ export default function ExplorePage() {
                 <button
                   key={filter}
                   onClick={() => { setActiveFilter(filter); }}
-                  className={`whitespace-nowrap px-6 py-2.5 rounded-full font-label-md text-base transition-all border-2 flex items-center gap-2 ${
+                  className={`whitespace-nowrap px-4 py-1.5 md:px-6 md:py-2.5 rounded-full font-label-md text-sm md:text-base transition-all border-2 flex items-center gap-1 md:gap-2 ${
                     activeFilter === filter
                       ? 'bg-primary text-on-primary border-primary shadow-lg scale-[1.02]'
                       : 'bg-surface text-on-surface-variant border-outline-variant/60 hover:bg-surface-container hover:border-outline hover:text-primary'

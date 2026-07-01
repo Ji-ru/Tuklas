@@ -18,12 +18,15 @@ export default function Layout() {
   const [isFloatersHidden, setIsFloatersHidden] = useState(false);
 
   return (
-    <div className="flex flex-col min-h-screen relative">
+    <div className="flex flex-col min-h-[100dvh] relative">
       <Header />
       <main className="flex-grow flex flex-col relative z-0">
         <Outlet context={{ onOpenSample: () => setIsSampleOpen(true), setFloatersHidden: setIsFloatersHidden } as OutletContextType} />
       </main>
-      {!isChatPage && <Footer />}
+      {/* Footer hidden on mobile — MobileNav serves as bottom nav on small screens */}
+      <div className="hidden md:block">
+        {!isChatPage && <Footer />}
+      </div>
       <MobileNav />
       <ScrollFloaters onOpenSample={() => setIsSampleOpen(true)} hideFloaters={isFloatersHidden} />
       <SampleItineraryPreview isOpen={isSampleOpen} onClose={() => setIsSampleOpen(false)} />

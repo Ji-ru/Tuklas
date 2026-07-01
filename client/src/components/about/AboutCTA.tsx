@@ -32,7 +32,7 @@ export default function AboutCTA() {
 
         {/* Content */}
         <div className="relative z-10 py-xl px-5 text-center space-y-8 flex flex-col items-center justify-center min-h-[300px]">
-          <h2 className="font-display-lg text-display-lg text-on-primary max-w-[672px] leading-tight">
+          <h2 className="font-display-lg text-[2rem] md:text-display-lg text-on-primary max-w-[672px] leading-tight">
             Ready to see the islands through a local's eyes?
           </h2>
           <p className="font-body-lg text-body-lg text-on-primary/90">

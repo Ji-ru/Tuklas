@@ -147,12 +147,12 @@ export default function PlanPage() {
   };
 
   return (
-    <div className="flex flex-col pb-20 md:pb-0">
+    <div className="flex flex-col pb-24 md:pb-0">
       {/* Hero Section */}
       <PlanHero />
 
       {/* Glass Form Panel overlapping hero */}
-      <div className="relative -mt-12 md:-mt-20 z-20 px-5 md:px-auto max-w-[1200px] mx-auto w-full px-5 pb-xl">
+      <div className="relative -mt-8 md:-mt-20 z-20 px-5 md:px-auto max-w-[1200px] mx-auto w-full px-5 pb-lg md:pb-xl">
         <motion.div 
           variants={formVariants}
           initial="hidden"

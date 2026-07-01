@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { useNavigate, Link, useSearchParams } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import ChatWindow, { type Message } from '../components/chat/ChatWindow';
 import ChatInput from '../components/chat/ChatInput';
@@ -34,28 +34,39 @@ What would you like to explore today?`;
 export default function ChatPage() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
+  const location = useLocation();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const prefilledHub = searchParams.get('hub');
+  const prefilledItinerary = location.state?.itineraryData;
 
   const [isTyping, setIsTyping] = useState(false);
-  const [showSuggestions, setShowSuggestions] = useState(!prefilledHub);
+  const [showSuggestions, setShowSuggestions] = useState(!prefilledHub && !prefilledItinerary);
+
+  const initialMessage = prefilledItinerary 
+    ? `✨ I see you want to customize your **${prefilledItinerary.title}**!\n\nHow would you like to modify it? For example:\n- *"Make it cheaper"* \n- *"Swap Day 2 with a beach trip"*\n- *"Add more food spots"*`
+    : prefilledHub
+      ? `Hi there! I'm **Tuklas AI** 🌴\n\nI see you're interested in **${prefilledHub}**! Great choice.\n\nI can answer any questions you have about this destination — food, activities, hidden gems — or I can create a full itinerary for you. What would you like to do?`
+      : GREETING_MESSAGE;
 
   const [messages, setMessages] = useState<Message[]>([
     {
       id: makeId(),
       role: 'assistant',
-      content: prefilledHub
-        ? `Hi there! I'm **Tuklas AI** 🌴\n\nI see you're interested in **${prefilledHub}**! Great choice.\n\nI can answer any questions you have about this destination — food, activities, hidden gems — or I can create a full itinerary for you. What would you like to do?`
-        : GREETING_MESSAGE,
+      content: initialMessage,
     },
   ]);
 
   // Conversation history for the API (excludes typing indicators)
   const chatHistoryRef = useRef<{ role: 'user' | 'assistant'; content: string }[]>(
-    prefilledHub
-      ? [{ role: 'assistant', content: `I see you're interested in ${prefilledHub}. I can answer questions or create an itinerary.` }]
-      : []
+    prefilledItinerary
+      ? [
+          { role: 'user', content: `Context: Here is my current generated itinerary. Please help me modify it based on my next requests.\n\n\`\`\`json\n${JSON.stringify(prefilledItinerary, null, 2)}\n\`\`\`` },
+          { role: 'assistant', content: 'I am ready to help you modify this itinerary! What would you like to change?' }
+        ]
+      : prefilledHub
+        ? [{ role: 'assistant', content: `I see you're interested in ${prefilledHub}. I can answer questions or create an itinerary.` }]
+        : []
   );
 
   const handleResetChat = useCallback(() => {
@@ -159,17 +170,17 @@ export default function ChatPage() {
   }, [isTyping, navigate]);
 
   return (
-    <div className="flex flex-col h-[100dvh] overflow-hidden bg-background pb-20 md:pb-0">
+    <div className="flex flex-col h-[100dvh] overflow-hidden bg-background pb-24 md:pb-0">
       {/* Header */}
       <motion.div
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5, ease: [0.21, 0.47, 0.32, 0.98] }}
-        className="pt-[88px] border-b border-surface-variant bg-surface/95 backdrop-blur-sm sticky top-0 z-20 shadow-sm"
+        className="pt-[72px] md:pt-[88px] border-b border-surface-variant bg-surface/95 backdrop-blur-sm sticky top-0 z-20 shadow-sm"
       >
         <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center shadow-md">
+            <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-primary flex items-center justify-center shadow-md">
               <span
                 className="material-symbols-outlined text-on-primary"
                 style={{ fontSize: '20px', fontVariationSettings: "'FILL' 1" }}
@@ -178,10 +189,11 @@ export default function ChatPage() {
               </span>
             </div>
             <div>
-              <h1 className="font-headline-md text-headline-md text-primary leading-tight">Tuklas AI</h1>
-              <p className="font-label-sm text-label-sm text-secondary flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full bg-secondary inline-block" />
-                Online · Philippine Travel Assistant
+              <h1 className="font-headline-md text-base md:text-headline-md text-primary leading-tight">Tuklas AI</h1>
+              <p className="font-label-sm text-[11px] md:text-label-sm text-secondary flex items-center gap-1">
+                <span className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-secondary inline-block" />
+                <span className="hidden sm:inline">Online · Philippine Travel Assistant</span>
+                <span className="sm:hidden">Online</span>
               </p>
             </div>
           </div>

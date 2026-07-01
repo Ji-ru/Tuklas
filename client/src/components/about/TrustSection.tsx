@@ -30,7 +30,7 @@ export default function TrustSection() {
           <span className="font-label-md text-label-md text-secondary tracking-widest uppercase block">
             Our Methodology
           </span>
-          <h2 className="font-display-md text-headline-lg md:text-headline-md text-primary leading-tight font-extrabold">
+          <h2 className="font-display-md text-2xl md:text-headline-lg text-primary leading-tight font-extrabold">
             {title}
           </h2>
           <p className="font-body-md text-body-md text-on-surface-variant italic">

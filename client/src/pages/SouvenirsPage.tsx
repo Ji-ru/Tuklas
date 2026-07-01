@@ -52,12 +52,12 @@ const SOUVENIRS = [
 
 export default function SouvenirsPage() {
   return (
-    <div className="pt-[120px] pb-xl px-5 md:px-lg max-w-[1200px] mx-auto w-full">
+    <div className="pt-[100px] md:pt-[120px] pb-24 md:pb-xl px-5 md:px-lg max-w-[1200px] mx-auto w-full">
       <div className="text-center mb-12">
         <span className="bg-secondary/15 text-secondary text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-4 inline-block">
           Pasalubong Guide
         </span>
-        <h1 className="font-display-md md:font-display-lg text-primary mb-4">Philippine Souvenirs</h1>
+        <h1 className="font-display-md text-2xl md:text-display-lg text-primary mb-4">Philippine Souvenirs</h1>
         <p className="font-body-lg text-on-surface-variant max-w-2xl mx-auto">
           "Pasalubong" is the Filipino tradition of bringing gifts from your travels. Discover the best local crafts, textiles, and treats to bring a piece of the islands home.
         </p>

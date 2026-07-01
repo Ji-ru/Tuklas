@@ -6,7 +6,7 @@ export default function PlanHero() {
     <section
       // Fix B: pt-20 clears the ~64px fixed header so content is never hidden behind it.
       // min-h-[480px] ensures the section stays tall enough after the top padding.
-      className="relative w-full min-h-[480px] md:min-h-[520px] flex items-center justify-center overflow-hidden rounded-b-3xl md:rounded-b-[48px] pt-20"
+      className="relative w-full min-h-[320px] md:min-h-[480px] lg:min-h-[520px] flex items-center justify-center overflow-hidden rounded-b-3xl md:rounded-b-[48px] pt-20"
     >
       {/* Background image */}
       <div
@@ -21,11 +21,11 @@ export default function PlanHero() {
 
       {/* Text — max-w-[768px] uses explicit px to avoid Tailwind v4 spacing-token collision */}
       <div className="relative z-10 text-center px-5 md:px-lg max-w-[768px] mx-auto">
-        <h1 className="font-display-lg text-display-lg text-primary mb-2 drop-shadow-md">
+        <h1 className="font-display-lg text-[2rem] leading-tight md:text-display-lg text-primary mb-2 drop-shadow-md">
           Stress-Free<br />Philippine Travel
         </h1>
         {/* max-w-[576px] explicit px — avoids max-w-xl resolving to 64px in Tailwind v4 */}
-        <p className="font-body-lg text-body-lg text-primary-container max-w-[576px] mx-auto opacity-90 drop-shadow-sm">
+        <p className="font-body-lg text-[0.9rem] leading-6 md:text-body-lg text-primary-container max-w-[576px] mx-auto opacity-90 drop-shadow-sm">
           Curated serenity in the archipelago. Use our intelligent planning tool to design your perfect escape in seconds.
         </p>
       </div>

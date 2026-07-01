@@ -20,6 +20,23 @@ export default function Header() {
     }
   }, [isDarkMode]);
 
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMenuOpen]);
+
+  // Close menu on route change
+  useEffect(() => {
+    setIsMenuOpen(false);
+  }, [pathname]);
+
   const toggleTheme = () => {
     if (isDarkMode) {
       document.documentElement.classList.remove('dark');
@@ -133,26 +150,26 @@ export default function Header() {
 
       {/* Mobile Menu Drawer Overlay */}
       {isMenuOpen && (
-        <div className="md:hidden fixed inset-0 bg-surface/98 backdrop-blur-lg z-45 flex flex-col justify-center items-center gap-lg">
-          <nav className="flex flex-col items-center gap-lg text-center">
+        <div className="md:hidden fixed inset-0 bg-surface/98 backdrop-blur-lg z-45 flex flex-col justify-center items-center gap-md">
+          <nav className="flex flex-col items-center gap-md text-center">
             <Link
               to="/"
               onClick={() => setIsMenuOpen(false)}
-              className={`font-headline-lg text-headline-lg text-primary ${pathname === '/' ? 'font-bold text-secondary' : ''}`}
+              className={`font-headline-md text-headline-md text-primary ${pathname === '/' ? 'font-bold text-secondary' : ''}`}
             >
               Home
             </Link>
             <Link
               to="/explore"
               onClick={() => setIsMenuOpen(false)}
-              className={`font-headline-lg text-headline-lg text-primary ${pathname === '/explore' ? 'font-bold text-secondary' : ''}`}
+              className={`font-headline-md text-headline-md text-primary ${pathname === '/explore' ? 'font-bold text-secondary' : ''}`}
             >
               Explore
             </Link>
             <Link
               to="/chat"
               onClick={() => setIsMenuOpen(false)}
-              className={`font-headline-lg text-headline-lg text-primary flex items-center gap-2 ${pathname === '/chat' ? 'font-bold text-secondary' : ''}`}
+              className={`font-headline-md text-headline-md text-primary flex items-center gap-2 ${pathname === '/chat' ? 'font-bold text-secondary' : ''}`}
             >
               <span className="material-symbols-outlined" style={{ fontVariationSettings: pathname === '/chat' ? "'FILL' 1" : "'FILL' 0" }}>chat_bubble</span>
               AI Chat
@@ -160,14 +177,14 @@ export default function Header() {
             <Link
               to="/sample-trip"
               onClick={() => setIsMenuOpen(false)}
-              className={`font-headline-lg text-headline-lg text-primary ${pathname === '/sample-trip' ? 'font-bold text-secondary' : ''}`}
+              className={`font-headline-md text-headline-md text-primary ${pathname === '/sample-trip' ? 'font-bold text-secondary' : ''}`}
             >
               Trips
             </Link>
             <Link
               to="/about"
               onClick={() => setIsMenuOpen(false)}
-              className={`font-headline-lg text-headline-lg text-primary ${pathname === '/about' ? 'font-bold text-secondary' : ''}`}
+              className={`font-headline-md text-headline-md text-primary ${pathname === '/about' ? 'font-bold text-secondary' : ''}`}
             >
               About
             </Link>

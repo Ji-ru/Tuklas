@@ -27,7 +27,7 @@ function App() {
           <Route path="souvenirs" element={<SouvenirsPage />} />
           <Route path="insurance" element={<TravelInsurancePage />} />
           <Route path="*" element={
-            <div className="flex flex-col items-center justify-center flex-grow gap-md pt-40 text-center px-5">
+            <div className="flex flex-col items-center justify-center flex-grow gap-md pt-40 pb-24 md:pb-0 text-center px-5">
               <span className="material-symbols-outlined text-6xl text-outline" style={{ fontSize: '64px' }}>explore_off</span>
               <h1 className="font-headline-lg text-headline-lg text-primary">Page Not Found</h1>
               <p className="font-body-md text-body-md text-on-surface-variant">This destination doesn't exist yet.</p>

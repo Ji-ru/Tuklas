@@ -10,12 +10,12 @@ export default function FAQSection() {
   };
 
   return (
-    <section id="faq" className="w-full max-w-[800px] mx-auto px-5 md:px-lg py-xl">
-      <div className="text-center mb-xl">
+    <section id="faq" className="w-full max-w-[800px] mx-auto px-5 md:px-lg py-lg md:py-xl">
+      <div className="text-center mb-lg md:mb-xl">
         <span className="font-label-md text-label-md text-secondary tracking-widest uppercase mb-2 block">
           Got Questions?
         </span>
-        <h2 className="font-headline-lg text-headline-lg text-primary">
+        <h2 className="font-headline-lg text-2xl md:text-headline-lg text-primary">
           Frequently Asked Questions
         </h2>
       </div>

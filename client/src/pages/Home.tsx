@@ -9,7 +9,7 @@ export default function Home() {
   const { onOpenSample } = useOutletContext<{ onOpenSample: () => void }>();
 
   return (
-    <div className="flex flex-col pb-20 md:pb-0">
+    <div className="flex flex-col pb-24 md:pb-0">
       <Hero onOpenSample={onOpenSample} />
       <StatsBar />
       <WhyUs />

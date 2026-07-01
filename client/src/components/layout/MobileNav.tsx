@@ -12,7 +12,10 @@ export default function MobileNav() {
   ];
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-center px-2 py-2 bg-surface shadow-[0_-8px_24px_rgba(0,51,102,0.1)] rounded-t-xl z-50">
+    <nav 
+      className="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-center px-2 pt-2 bg-surface shadow-[0_-8px_24px_rgba(0,51,102,0.1)] rounded-t-xl z-50"
+      style={{ paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom))' }}
+    >
       {tabs.map((tab) => {
         const active = pathname === tab.path;
         return (

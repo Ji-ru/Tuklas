@@ -41,7 +41,7 @@ interface Props {
 
 export default function HowItWorks({ onOpenSample }: Props) {
   return (
-    <section id="how-it-works" className="w-full max-w-[1200px] mx-auto px-5 md:px-lg py-xl overflow-hidden">
+    <section id="how-it-works" className="w-full max-w-[1200px] mx-auto px-5 md:px-lg py-lg md:py-xl overflow-hidden">
       <motion.div
         variants={container}
         initial="hidden"
@@ -49,9 +49,9 @@ export default function HowItWorks({ onOpenSample }: Props) {
         viewport={{ once: true, margin: "0px 0px -100px 0px" }}
       >
         {/* Header */}
-        <motion.div variants={item} className="text-center mb-xl">
+        <motion.div variants={item} className="text-center mb-lg md:mb-xl">
           <span className="font-label-md text-label-md text-secondary tracking-widest uppercase mb-2 block">The Process</span>
-          <h2 className="font-headline-lg text-headline-lg text-primary">Curated in 3 Steps</h2>
+          <h2 className="font-headline-lg text-2xl md:text-headline-lg text-primary">Curated in 3 Steps</h2>
         </motion.div>
 
       {/* Timeline */}
@@ -65,7 +65,7 @@ export default function HowItWorks({ onOpenSample }: Props) {
             <motion.div
               variants={item}
               key={step.num}
-              className="bg-surface rounded-2xl p-md shadow-[0_8px_20px_rgba(0,51,102,0.08)] flex flex-col items-center text-center relative mt-8 md:mt-0"
+              className="bg-surface rounded-2xl p-md shadow-[0_8px_20px_rgba(0,51,102,0.08)] flex flex-col items-center text-center relative mt-10 md:mt-0"
             >
               {/* Step number circle */}
               <div
@@ -111,7 +111,7 @@ export default function HowItWorks({ onOpenSample }: Props) {
       <motion.div variants={item} className="flex justify-center mt-xl">
         <Link
           to="/plan"
-          className="bg-primary text-on-primary font-label-md text-label-md px-8 py-4 rounded-xl hover:bg-primary/90 transition-all duration-300 shadow-[0_8px_20px_rgba(0,51,102,0.15)] active:scale-[0.98] border-t border-white/20 inline-block"
+          className="bg-primary text-on-primary font-label-md text-label-md px-6 py-3 md:px-8 md:py-4 rounded-xl hover:bg-primary/90 transition-all duration-300 shadow-[0_8px_20px_rgba(0,51,102,0.15)] active:scale-[0.98] border-t border-white/20 inline-block"
         >
           Create Itinerary
         </Link>

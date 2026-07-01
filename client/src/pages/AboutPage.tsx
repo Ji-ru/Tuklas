@@ -7,7 +7,7 @@ import AboutCTA from '../components/about/AboutCTA';
 
 export default function AboutPage() {
   return (
-    <div className="flex flex-col pb-20 md:pb-0 pt-24">
+    <div className="flex flex-col pb-24 md:pb-0 pt-24">
       <div className="max-w-[1200px] mx-auto w-full space-y-0">
         <AboutHero />
         <ProblemSolution />

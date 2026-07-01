@@ -12,7 +12,7 @@ const item: Variants = {
 
 export default function WhyUs() {
   return (
-    <section id="why-us" className="w-full max-w-[1200px] mx-auto px-5 md:px-lg py-xl">
+    <section id="why-us" className="w-full max-w-[1200px] mx-auto px-5 md:px-lg py-lg md:py-xl">
       <motion.div
         variants={container}
         initial="hidden"
@@ -20,8 +20,8 @@ export default function WhyUs() {
         viewport={{ once: true, margin: "0px 0px -100px 0px" }}
       >
         {/* Section header */}
-        <motion.div variants={item} className="text-center mb-xl">
-          <h2 className="font-headline-lg text-headline-lg text-primary mb-sm">
+        <motion.div variants={item} className="text-center mb-lg md:mb-xl">
+          <h2 className="font-headline-lg text-2xl md:text-headline-lg text-primary mb-sm">
             Why Tuklas?
           </h2>
           <p className="font-body-md text-body-md text-on-surface-variant max-w-[672px] mx-auto">
@@ -33,7 +33,7 @@ export default function WhyUs() {
         {/* Bento Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-md">
         {/* Card 1 — Wide (Intelligent Island Routing) */}
-        <motion.div variants={item} className="md:col-span-2 bg-surface rounded-3xl p-lg shadow-[0_8px_20px_rgba(0,51,102,0.08)] border border-surface-variant group hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
+        <motion.div variants={item} className="md:col-span-2 bg-surface rounded-3xl p-md md:p-lg shadow-[0_8px_20px_rgba(0,51,102,0.08)] border border-surface-variant group hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-primary-container/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4" />
           <div className="bg-primary-container text-on-primary-container w-12 h-12 rounded-xl flex items-center justify-center mb-md">
             <span
@@ -54,7 +54,7 @@ export default function WhyUs() {
         </motion.div>
 
         {/* Card 2 — The Perfect Blend */}
-        <motion.div variants={item} className="bg-surface rounded-3xl p-lg shadow-[0_8px_20px_rgba(0,51,102,0.08)] border border-surface-variant group hover:-translate-y-1 transition-all duration-300">
+        <motion.div variants={item} className="bg-surface rounded-3xl p-md md:p-lg shadow-[0_8px_20px_rgba(0,51,102,0.08)] border border-surface-variant group hover:-translate-y-1 transition-all duration-300">
           <div className="bg-secondary-container text-on-secondary-container w-12 h-12 rounded-xl flex items-center justify-center mb-md">
             <span
               className="material-symbols-outlined"
@@ -73,7 +73,7 @@ export default function WhyUs() {
         </motion.div>
 
         {/* Card 3 — Expert Local Intel */}
-        <motion.div variants={item} className="bg-surface rounded-3xl p-lg shadow-[0_8px_20px_rgba(0,51,102,0.08)] border border-surface-variant group hover:-translate-y-1 transition-all duration-300">
+        <motion.div variants={item} className="bg-surface rounded-3xl p-md md:p-lg shadow-[0_8px_20px_rgba(0,51,102,0.08)] border border-surface-variant group hover:-translate-y-1 transition-all duration-300">
           <div className="bg-tertiary-container text-on-tertiary-container w-12 h-12 rounded-xl flex items-center justify-center mb-md">
             <span
               className="material-symbols-outlined"
@@ -92,7 +92,7 @@ export default function WhyUs() {
         </motion.div>
 
         {/* Card 4 — Wide Dark (Island-Proof Access) */}
-        <motion.div variants={item} className="md:col-span-2 bg-primary text-on-primary rounded-3xl p-lg shadow-[0_12px_24px_rgba(0,51,102,0.15)] border border-primary-fixed-dim/20 relative overflow-hidden flex flex-col justify-center">
+        <motion.div variants={item} className="md:col-span-2 bg-primary text-on-primary rounded-3xl p-md md:p-lg shadow-[0_12px_24px_rgba(0,51,102,0.15)] border border-primary-fixed-dim/20 relative overflow-hidden flex flex-col justify-center">
           <div
             className="absolute right-0 top-0 w-1/2 h-full bg-cover bg-center opacity-40 mix-blend-overlay"
             style={{
