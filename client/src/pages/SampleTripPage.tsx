@@ -421,7 +421,7 @@ export default function SampleTripPage() {
           </div>
 
           {/* Day Activities List */}
-          <div className="p-5 md:p-md flex-1">
+          <div className="p-5 md:p-md">
             <div className="mb-4 md:mb-6 bg-surface-container-low p-3 md:p-4 rounded-xl border border-surface-variant/40 space-y-2 md:space-y-3">
               <div className="flex items-center justify-between gap-4 flex-wrap">
                 <div className="flex items-center gap-3">
@@ -545,24 +545,26 @@ export default function SampleTripPage() {
                 <p className="font-body-md text-on-surface-variant">No activities scheduled for this day.</p>
               )}
             </div>
-            <div className="h-28 md:h-8" />
           </div>
 
           {/* Empty State CTA (Shown when no user itinerary exists) */}
           {!itinerary && (
-            <div className="mx-5 md:mx-md mb-8 p-6 bg-surface-container-high border border-outline-variant/30 rounded-2xl text-center shadow-sm">
+            <div className="mx-5 md:mx-md mb-4 p-6 bg-surface-container-high border border-outline-variant/30 rounded-2xl text-center shadow-sm">
               <h3 className="font-headline-sm text-primary mb-2">You're viewing a sample trip</h3>
               <p className="font-body-sm text-on-surface-variant mb-4">
                 You haven't generated your own itinerary yet. Start planning to see your customized trip here.
               </p>
               <a 
                 href="/plan" 
-                className="bg-primary text-on-primary px-6 py-2 rounded-full font-label-md hover:bg-primary/90 transition-colors inline-block"
+                className="bg-primary text-on-primary px-6 py-2 rounded-full font-label-md hover:bg-primary/90 transition-colors inline-block shadow-sm"
               >
                 Start Planning
               </a>
             </div>
           )}
+
+          {/* Bottom spacer for mobile nav clearance */}
+          <div className="h-28 md:h-8 shrink-0" />
         </div>
 
         {/* Share Toast */}
