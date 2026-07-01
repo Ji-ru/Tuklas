@@ -46,7 +46,8 @@ export default function ExplorePage() {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch('http://localhost:3000/api/destinations');
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+      const response = await fetch(`${apiUrl}/api/destinations`);
       if (!response.ok) throw new Error('Failed to fetch destinations');
       const data = await response.json();
       setDestinations(data);
