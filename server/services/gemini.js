@@ -117,24 +117,40 @@ export async function generateItineraryFromAI(params) {
     throw new Error('GEMINI_API_KEY environment variable is not configured.');
   }
 
+  const destinations = params.destinations || [];
+  const hubNames = destinations.map(d => d.hub);
+
   // --- RAG RETRIEVAL STEP (runs BEFORE model init so we can inject into systemInstruction) ---
-  console.log(`[RAG] Fetching real-world POIs for ${params.hub}...`);
-  const [attractions, restaurants] = await Promise.all([
-    searchPlacesText(`Top tourist attractions and things to do in ${params.hub}, Philippines`),
-    searchPlacesText(`Best highly rated restaurants and dining in ${params.hub}, Philippines`)
+  // Fetch real-world POIs for ALL selected destinations in parallel
+  console.log(`[RAG] Fetching real-world POIs for ${hubNames.join(', ')}...`);
+  const ragPromises = destinations.flatMap(d => [
+    searchPlacesText(`Top tourist attractions and things to do in ${d.hub}, Philippines`),
+    searchPlacesText(`Best highly rated restaurants and dining in ${d.hub}, Philippines`),
   ]);
+  const ragResults = await Promise.all(ragPromises);
 
   let ragContext = '';
-  if (attractions || restaurants) {
+  const hasAnyData = ragResults.some(r => !!r);
+  if (hasAnyData) {
     ragContext = `\n\n### VERIFIED REAL-WORLD DATA (USE THESE TO BUILD THE ITINERARY) ###\n` +
                  `The following places are verified, real-world locations from Google Places. You MUST prioritize these places when generating the itinerary to ensure accuracy.\n\n`;
-    if (attractions) ragContext += `**Top Attractions:**\n${attractions}\n\n`;
-    if (restaurants) ragContext += `**Top Restaurants:**\n${restaurants}\n\n`;
+    destinations.forEach((d, i) => {
+      const attractions = ragResults[i * 2];
+      const restaurants = ragResults[i * 2 + 1];
+      if (attractions || restaurants) {
+        ragContext += `#### ${d.hub} ####\n`;
+        if (attractions) ragContext += `**Top Attractions:**\n${attractions}\n\n`;
+        if (restaurants) ragContext += `**Top Restaurants:**\n${restaurants}\n\n`;
+      }
+    });
   }
   // --- END RAG ---
 
   // Build dynamic system instruction with RAG grounding data baked into the highest authority level
-  const dynamicSystemInstruction = `${GENERATE_SYSTEM_PROMPT}${ragContext}`;
+  const multiDestRule = destinations.length > 1
+    ? `\n- If multiple destinations are provided, distribute the duration logically across all destinations, accounting for realistic transit time between them. Include transit/travel days as needed. Create a title that reflects the multi-city journey (e.g., "Island-Hopping: Cebu to Siargao").`
+    : '';
+  const dynamicSystemInstruction = `${GENERATE_SYSTEM_PROMPT}${multiDestRule}${ragContext}`;
 
   const model = genAI.getGenerativeModel({
     model: 'gemini-2.5-flash',
@@ -145,8 +161,13 @@ export async function generateItineraryFromAI(params) {
   const sanitizedNotes = sanitizeUserInput(params.notes);
   const notesText = sanitizedNotes ? `\n<user_notes>${sanitizedNotes}</user_notes>` : '';
 
+  // Build destination line: single hub or routing chain
+  const destinationLine = destinations.length === 1
+    ? `Hub: ${destinations[0].hub} (Region: ${destinations[0].region || 'Philippines'})`
+    : `Destinations: ${destinations.map(d => `${d.hub} (${d.region || 'Philippines'})`).join(' \u2192 ')}`;
+
   const userPrompt = `Generate a travel itinerary for:
-Hub: ${params.hub} (Region: ${params.region || 'Philippines'})
+${destinationLine}
 Duration: ${params.duration} days
 Group: ${params.travelGroup || 'Solo'}
 Budget: ${params.budget || 'Mid-range'} ${params.budgetBasis ? `(${params.budgetBasis})` : ''}
@@ -155,13 +176,14 @@ Dietary: ${params.dietary || 'No Restrictions'}
 Vibes: ${params.purpose || 'Leisure'}
 Pace: ${params.pace || 'Moderate'}${notesText}`;
 
-  // Call Gemini with a 45-second timeout
+  // Call Gemini with a longer timeout for multi-destination
+  const timeoutMs = destinations.length > 1 ? 60000 : 45000;
   const result = await withTimeout(
     model.generateContent({
       contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
       generationConfig: { responseMimeType: 'application/json' }
     }),
-    45000
+    timeoutMs
   );
 
   const cleanedResponse = result.response.text().trim();
@@ -191,11 +213,38 @@ Pace: ${params.pace || 'Moderate'}${notesText}`;
   const finalItinerary = validation.data;
 
   // Enhance activities with Wikipedia/Fallback images
+  // Sort hubs by length descending to match more specific names first
+  const sortedHubs = [...hubNames].sort((a, b) => b.length - a.length);
+
   await Promise.all(
     finalItinerary.days.map(async (day) => {
+      // Best-effort heuristic: Try to determine which hub this day belongs to
+      // by checking if any hub name appears in the dayTitle or routingRationale.
+      const dayText = `${day.dayTitle} ${day.routingRationale || ''}`.toLowerCase();
+      let dayHub = hubNames[0] || 'Philippines';
+      
+      for (const h of sortedHubs) {
+        if (dayText.includes(h.toLowerCase())) {
+          dayHub = h;
+          break;
+        }
+      }
+
       await Promise.all(
         day.activities.map(async (activity) => {
-          activity.image = await fetchActivityImage(activity.title, params.hub, activity.type);
+          // Additional fallback: check the activity description/title itself
+          let activityHub = dayHub;
+          const actText = `${activity.title} ${activity.description}`.toLowerCase();
+          for (const h of sortedHubs) {
+            if (actText.includes(h.toLowerCase())) {
+              activityHub = h;
+              break;
+            }
+          }
+          
+          if (!activity.image || !activity.image.startsWith('http')) {
+            activity.image = await fetchActivityImage(activity.title, activityHub, activity.type);
+          }
         })
       );
     })
@@ -325,7 +374,11 @@ export async function chatWithAI(messages) {
 
     // Parse and validate the itinerary JSON
     try {
-      const parsed = JSON.parse(itineraryMatch[1].trim());
+      let jsonString = itineraryMatch[1].trim();
+      if (jsonString.startsWith('```')) {
+        jsonString = jsonString.replace(/^```json\n?|^```\n?/, '').replace(/```$/, '').trim();
+      }
+      const parsed = JSON.parse(jsonString);
       const validation = itinerarySchema.safeParse(parsed);
 
       if (validation.success) {
@@ -336,7 +389,7 @@ export async function chatWithAI(messages) {
           itinerary.days.map(async (day) => {
             await Promise.all(
               day.activities.map(async (activity) => {
-                const hub = itinerary.title || 'Philippines';
+                const hub = 'Philippines';
                 activity.image = await fetchActivityImage(activity.title, hub, activity.type);
               })
             );

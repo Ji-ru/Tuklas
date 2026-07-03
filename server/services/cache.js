@@ -2,18 +2,23 @@ import crypto from 'crypto';
 import { query } from '../db/index.js';
 
 export function makeCacheKey(params) {
+  // Sort destinations by hub name for consistent hashing regardless of selection order
+  const sortedDests = (params.destinations || []).map(d => ({
+    region: d.region?.toLowerCase().trim(),
+    hub: d.hub?.toLowerCase().trim(),
+  })).sort((a, b) => (a.hub || '').localeCompare(b.hub || ''));
+
   const normalized = JSON.stringify({
-    region: params.region?.toLowerCase().trim(),
-    hub: params.hub?.toLowerCase().trim(),
+    destinations: sortedDests,
     duration: params.duration,
-    purpose: params.purpose?.toLowerCase().trim(),
-    pace: params.pace?.toLowerCase().trim(),
-    budget: params.budget?.toLowerCase().trim(),
-    budgetBasis: params.budgetBasis?.toLowerCase().trim(),
-    travelGroup: params.travelGroup?.toLowerCase().trim(),
-    accommodation: params.accommodation?.toLowerCase().trim(),
-    dietary: params.dietary?.toLowerCase().trim(),
-    // 'notes' is explicitly excluded due to its freeform nature
+    purpose: (params.purpose || 'Leisure').toLowerCase().trim(),
+    pace: (params.pace || 'Moderate').toLowerCase().trim(),
+    budget: params.budget?.toLowerCase().trim() || null,
+    budgetBasis: params.budgetBasis?.toLowerCase().trim() || null,
+    travelGroup: params.travelGroup?.toLowerCase().trim() || null,
+    accommodation: params.accommodation?.toLowerCase().trim() || null,
+    dietary: params.dietary?.toLowerCase().trim() || null,
+    notes: params.notes?.toLowerCase().trim() || null,
   });
   return crypto.createHash('sha256').update(normalized).digest('hex');
 }
@@ -34,26 +39,38 @@ export async function getCachedItinerary(cacheKey) {
 }
 
 export async function saveItinerary(params, cacheKey, itineraryData) {
-  // Insert new entry with TTL of 7 days (cleanup handled by background job)
+  // Insert new entry with TTL of 7 days. Use ON CONFLICT to prevent constraint violation on race conditions.
   const insertQuery = `
     INSERT INTO saved_itineraries (
       hub_name, duration_days, purpose, pace,
-      budget, travel_group, accommodation, dietary, notes,
+      budget, budget_basis, travel_group, accommodation, dietary, notes,
       itinerary_data, cache_key, expires_at
     )
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW() + INTERVAL '7 days')
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NOW() + INTERVAL '7 days')
+    ON CONFLICT (cache_key) DO UPDATE 
+      SET itinerary_data = EXCLUDED.itinerary_data, 
+          expires_at = EXCLUDED.expires_at,
+          hub_name = EXCLUDED.hub_name,
+          notes = EXCLUDED.notes
     RETURNING id
   `;
+  // Join all hub names for the hub_name column (VARCHAR(1000)). Sort them to match cacheKey sorting
+  const sortedHubNames = (params.destinations || [])
+    .map(d => d.hub)
+    .sort((a, b) => a.localeCompare(b))
+    .join(', ');
+    
   const values = [
-    params.hub,
+    sortedHubNames,
     params.duration,
     params.purpose || 'Leisure',
     params.pace || 'Moderate',
-    params.budget,
-    params.travelGroup,
-    params.accommodation,
-    params.dietary,
-    params.notes,
+    params.budget || null,
+    params.budgetBasis || null,
+    params.travelGroup || null,
+    params.accommodation || null,
+    params.dietary || null,
+    params.notes || null,
     itineraryData,
     cacheKey
   ];

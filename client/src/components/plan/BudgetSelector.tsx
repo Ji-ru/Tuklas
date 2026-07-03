@@ -79,10 +79,10 @@ export default function BudgetSelector({
             <div
               key={tier.id}
               onClick={() => onBudgetChange(tier.id)}
-              className={`p-3 rounded-lg border cursor-pointer transition-all ${
+              className={`p-3 rounded-lg cursor-pointer transition-all ${
                 active
-                  ? 'border-2 border-primary bg-primary-container text-on-primary-container shadow-md'
-                  : 'border border-outline-variant bg-surface-dim text-on-surface hover:border-primary'
+                  ? 'border-2 border-secondary bg-secondary-container text-on-secondary-container shadow-md'
+                  : 'border border-outline-variant bg-surface-container-lowest text-on-surface hover:border-secondary hover:bg-surface-container'
               }`}
             >
               <div className="flex justify-between items-start">

@@ -82,8 +82,21 @@ export default function ChatPage() {
     ]);
   }, [setSearchParams]);
 
+  const isMounted = useRef(true);
+  const isInitialMount = useRef(true);
+
+  useEffect(() => {
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
+
   // Update chat state if the ?hub= URL parameter changes mid-session
   useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
     const hub = searchParams.get('hub');
     if (hub) {
       chatHistoryRef.current = [{ role: 'assistant', content: `I see you're interested in ${hub}. I can answer questions or create an itinerary.` }];
@@ -149,16 +162,21 @@ export default function ChatPage() {
 
         // Add a follow-up message announcing the itinerary
         setTimeout(() => {
+          if (!isMounted.current) return;
           setMessages(prev => [...prev, {
             id: makeId(),
             role: 'assistant',
             content: `✨ Your itinerary is ready! Redirecting you to view it now.`,
           }]);
-          setTimeout(() => navigate('/sample-trip'), 1500);
+          setTimeout(() => {
+            if (isMounted.current) navigate('/sample-trip');
+          }, 1500);
         }, 800);
       }
 
     } catch (err) {
+      // Revert history so we don't send duplicate user messages on retry
+      chatHistoryRef.current.pop();
       // Replace typing indicator with error message
       const errorMessage = `Oops! I couldn't connect to the server. Please make sure the backend is running.\n\nError: ${err instanceof Error ? err.message : 'Unknown error'}`;
       setMessages(prev =>

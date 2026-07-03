@@ -8,7 +8,7 @@ const router = Router();
 router.post('/', validateBody(generateSchema), async (req, res, next) => {
   try {
     const params = req.body;
-    console.log(`[GENERATE] Request for Hub: ${params.hub}, Days: ${params.duration}`);
+    console.log(`[GENERATE] Request for Hubs: ${params.destinations.map(d => d.hub).join(' → ')}, Days: ${params.duration}`);
 
     // 1. Generate cache key
     const cacheKey = makeCacheKey(params);

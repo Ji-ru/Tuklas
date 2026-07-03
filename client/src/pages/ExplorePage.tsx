@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import type { Variants } from 'framer-motion';
@@ -67,19 +67,22 @@ export default function ExplorePage() {
     setCurrentPage(1);
   }, [activeFilter, searchQuery]);
 
-  const filterByRegion = activeFilter === 'All' 
-    ? destinations 
-    : activeFilter === 'Hidden Gems'
-      ? destinations.filter(d => d.is_hidden_gem)
-      : destinations.filter(d => d.island_group === activeFilter);
+  const baseSearchedDestinations = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return destinations;
+    return destinations.filter(d =>
+      d.hub_name?.toLowerCase().includes(q) ||
+      d.description?.toLowerCase().includes(q) ||
+      d.region_name?.toLowerCase().includes(q) ||
+      d.island_group?.toLowerCase().includes(q)
+    );
+  }, [destinations, searchQuery]);
 
-  const filteredDestinations = searchQuery.trim()
-    ? filterByRegion.filter(d =>
-        d.hub_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        d.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        d.region_name?.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    : filterByRegion;
+  const filteredDestinations = activeFilter === 'All'
+    ? baseSearchedDestinations
+    : activeFilter === 'Hidden Gems'
+      ? baseSearchedDestinations.filter(d => d.is_hidden_gem)
+      : baseSearchedDestinations.filter(d => d.island_group === activeFilter);
 
   const ITEMS_PER_PAGE = 12;
   const totalPages = Math.ceil(filteredDestinations.length / ITEMS_PER_PAGE);
@@ -140,19 +143,11 @@ export default function ExplorePage() {
         <div className="sticky top-[88px] z-10 bg-background/95 backdrop-blur-md py-5 mb-8 border-b border-surface-variant/50">
           <div className="flex flex-nowrap md:flex-wrap justify-start md:justify-center gap-3 overflow-x-auto pb-2 scrollbar-hide">
             {filters.map((filter) => {
-              const baseList = filter === 'All' 
-                ? destinations 
+              const count = filter === 'All'
+                ? baseSearchedDestinations.length
                 : filter === 'Hidden Gems'
-                  ? destinations.filter(d => d.is_hidden_gem)
-                  : destinations.filter(d => d.island_group === filter);
-              
-              const count = searchQuery.trim()
-                ? baseList.filter(d => 
-                    d.hub_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                    d.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                    d.region_name?.toLowerCase().includes(searchQuery.toLowerCase())
-                  ).length
-                : baseList.length;
+                  ? baseSearchedDestinations.filter(d => d.is_hidden_gem).length
+                  : baseSearchedDestinations.filter(d => d.island_group === filter).length;
 
               return (
                 <button
@@ -182,8 +177,9 @@ export default function ExplorePage() {
         </div>
 
         {/* Loading State */}
+        <div id="explore-grid" className="scroll-mt-24" />
         {isLoading && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-pulse">
             {[1, 2, 3, 4, 5, 6].map(i => (
               <div key={i} className="bg-surface-variant rounded-2xl h-[400px]" />
             ))}
@@ -240,7 +236,7 @@ export default function ExplorePage() {
                   <button
                     onClick={() => {
                       setCurrentPage(p => Math.max(1, p - 1));
-                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                      document.getElementById('explore-grid')?.scrollIntoView({ behavior: 'smooth' });
                     }}
                     disabled={currentPage === 1}
                     className="w-10 h-10 rounded-full flex items-center justify-center border border-outline-variant text-on-surface hover:bg-surface-variant disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
@@ -249,28 +245,40 @@ export default function ExplorePage() {
                   </button>
                   
                   <div className="flex gap-1">
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                      <button
-                        key={page}
-                        onClick={() => {
-                          setCurrentPage(page);
-                          window.scrollTo({ top: 0, behavior: 'smooth' });
-                        }}
-                        className={`w-10 h-10 rounded-full flex items-center justify-center font-label-lg transition-all ${
-                          currentPage === page 
-                            ? 'bg-primary text-on-primary shadow-md' 
-                            : 'text-on-surface-variant hover:bg-surface-variant'
-                        }`}
-                      >
-                        {page}
-                      </button>
-                    ))}
+                    {Array.from({ length: totalPages }, (_, i) => i + 1)
+                      .filter(p => p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1)
+                      .reduce((acc, p, i, arr) => {
+                        if (i > 0 && arr[i - 1] !== p - 1) acc.push('...');
+                        acc.push(p);
+                        return acc;
+                      }, [] as (number | string)[])
+                      .map((page, i) => page === '...' ? (
+                        <span key={`dots-${i}`} className="w-10 h-10 flex items-center justify-center text-on-surface-variant/50 font-label-lg">
+                          ...
+                        </span>
+                      ) : (
+                        <button
+                          key={page}
+                          onClick={() => {
+                            setCurrentPage(page as number);
+                            document.getElementById('explore-grid')?.scrollIntoView({ behavior: 'smooth' });
+                          }}
+                          className={`w-10 h-10 rounded-full flex items-center justify-center font-label-lg transition-all ${
+                            currentPage === page 
+                              ? 'bg-primary text-on-primary shadow-md' 
+                              : 'text-on-surface-variant hover:bg-surface-variant'
+                          }`}
+                        >
+                          {page}
+                        </button>
+                      ))
+                    }
                   </div>
 
                   <button
                     onClick={() => {
                       setCurrentPage(p => Math.min(totalPages, p + 1));
-                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                      document.getElementById('explore-grid')?.scrollIntoView({ behavior: 'smooth' });
                     }}
                     disabled={currentPage === totalPages}
                     className="w-10 h-10 rounded-full flex items-center justify-center border border-outline-variant text-on-surface hover:bg-surface-variant disabled:opacity-30 disabled:hover:bg-transparent transition-colors"

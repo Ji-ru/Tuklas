@@ -24,8 +24,16 @@ export default function DestinationCard({ destination, onClick }: Props) {
 
   return (
     <div 
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
       onClick={onClick}
-      className={`group bg-surface-bright rounded-2xl overflow-hidden border border-surface-variant shadow-[0_4px_12px_rgba(0,51,102,0.06)] hover:shadow-[0_12px_40px_rgba(0,51,102,0.12)] transition-all duration-300 flex flex-col h-full hover:-translate-y-1 ${onClick ? 'cursor-pointer' : ''}`}
+      onKeyDown={(e) => {
+        if (onClick && (e.key === 'Enter' || e.key === ' ')) {
+          e.preventDefault();
+          onClick();
+        }
+      }}
+      className={`group bg-surface-bright rounded-2xl overflow-hidden border border-surface-variant shadow-[0_4px_12px_rgba(0,51,102,0.06)] hover:shadow-[0_12px_40px_rgba(0,51,102,0.12)] transition-all duration-300 flex flex-col h-full hover:-translate-y-1 ${onClick ? 'cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2' : ''}`}
     >
       {/* Image Container */}
       <div className="relative w-full aspect-[4/3] overflow-hidden bg-surface-variant">
@@ -74,8 +82,8 @@ export default function DestinationCard({ destination, onClick }: Props) {
         {/* Vibe Tags */}
         {vibes.length > 0 && (
           <div className="flex flex-wrap gap-1.5 mb-5">
-            {vibes.slice(0, 3).map(vibe => (
-              <span key={vibe} className="px-2 py-0.5 rounded-md bg-surface-variant text-on-surface-variant font-label-sm text-[11px] uppercase tracking-wide">
+            {vibes.slice(0, 3).map((vibe, idx) => (
+              <span key={`${vibe}-${idx}`} className="px-2 py-0.5 rounded-md bg-surface-variant text-on-surface-variant font-label-sm text-[11px] uppercase tracking-wide">
                 {vibe}
               </span>
             ))}

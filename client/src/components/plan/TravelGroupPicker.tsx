@@ -19,7 +19,7 @@ const groups = [
 const accommodations = [
   { id: 'hotel', label: 'Hotel', icon: 'hotel' },
   { id: 'resort', label: 'Resort', icon: 'beach_access' },
-  { id: 'hostel', label: 'Hostel', icon: 'bunk_bed' },
+  { id: 'hostel', label: 'Hostel', icon: 'single_bed' },
   { id: 'airbnb', label: 'Airbnb', icon: 'cottage' },
 ];
 
@@ -116,8 +116,8 @@ export default function TravelGroupPicker({
                     onClick={() => onAccommodationSelect(a.id)}
                     className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-left cursor-pointer transition-all duration-200 ${
                       active
-                        ? 'border-primary bg-primary text-on-primary shadow-sm'
-                        : 'border-outline-variant bg-surface-container-low text-on-surface hover:border-primary'
+                        ? 'border-secondary bg-secondary-container text-on-secondary-container shadow-sm'
+                        : 'border-outline-variant bg-surface-container-lowest text-on-surface hover:border-secondary hover:bg-surface-container'
                     }`}
                   >
                     <span

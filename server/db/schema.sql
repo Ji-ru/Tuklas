@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS destinations (
 -- 2. Create saved_itineraries table
 CREATE TABLE IF NOT EXISTS saved_itineraries (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  hub_name VARCHAR(100) NOT NULL,
+  hub_name VARCHAR(500) NOT NULL,
   duration_days INT NOT NULL,
   purpose VARCHAR(100) NOT NULL,
   pace VARCHAR(50) NOT NULL,
@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS saved_itineraries (
 
 -- 3. Seed destinations data
 INSERT INTO destinations (island_group, region_name, hub_name, category, is_hidden_gem, description, image_url, vibes, activities) VALUES
-('Luzon', 'National Capital Region', 'Metro Manila', 'Sightseeing', false, 'Historic Intramuros, dynamic BGC urban environments, and diverse culinary districts.', NULL, ARRAY['Food Trip', 'Shopping', 'Heritage & Culture'], ARRAY['Explore the historic walled city of Intramuros', 'Dine at top-rated restaurants in BGC and Makati', 'Shop at mega-malls like SM Mall of Asia', 'Visit the National Museum complex']),
+('Luzon', 'National Capital Region', 'Metro Manila', 'Sightseeing', false, 'Historic Intramuros, dynamic BGC urban environments, and diverse culinary districts.', 'https://images.unsplash.com/photo-1518509562904-e7ef99cdcc86?q=80&w=960&auto=format&fit=crop', ARRAY['Food Trip', 'Shopping', 'Heritage & Culture'], ARRAY['Explore the historic walled city of Intramuros', 'Dine at top-rated restaurants in BGC and Makati', 'Shop at mega-malls like SM Mall of Asia', 'Visit the National Museum complex']),
 ('Luzon', 'Cordillera Administrative Region', 'Baguio City', 'Sightseeing', false, 'Cool mountain climate, pine forests, artistic cafes, and local craft markets.', 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Baguio_city_proper_overlooking_Burnham-Harrison_side_%28Baguio_city%3B_12-04-2022%29.jpg/330px-Baguio_city_proper_overlooking_Burnham-Harrison_side_%28Baguio_city%3B_12-04-2022%29.jpg', ARRAY['Relaxation', 'Food Trip', 'Heritage & Culture'], ARRAY['Stroll through Burnham Park and Camp John Hay', 'Pick fresh strawberries in La Trinidad', 'Visit the BenCab Museum', 'Shop for local crafts at the Night Market']),
 ('Luzon', 'Cordillera Administrative Region', 'Cordillera Highlands (Sagada/Banaue)', 'Sightseeing', true, 'Ancient rice terraces, hanging coffins, and mystical mountain caves.', 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Banaue-terrace.JPG/330px-Banaue-terrace.JPG', ARRAY['Adventure', 'Heritage & Culture', 'Wellness'], ARRAY['Marvel at the Banaue Rice Terraces', 'Explore the Sumaguing Cave in Sagada', 'View the hanging coffins at Echo Valley', 'Hike up Mt. Kiltepan for sunrise']),
 ('Luzon', 'MIMAROPA', 'Palawan (El Nido/Coron)', 'Sightseeing', false, 'World-class limestone karst formations, lagoons, and crystal clear diving ecosystems.', 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/El_Nido_Bay_December_2018.jpg/330px-El_Nido_Bay_December_2018.jpg', ARRAY['Adventure', 'Relaxation'], ARRAY['Take an underground river tour in Puerto Princesa', 'Island hop in El Nido''s Bacuit Bay', 'Snorkel at Kayangan Lake in Coron', 'Explore World War II shipwrecks']),
@@ -94,8 +94,8 @@ ON CONFLICT (hub_name) DO UPDATE SET
   description = EXCLUDED.description,
   -- By putting 'destinations.column' first, we ensure that if your live database 
   -- ALREADY has an image, vibe, or activity, it won't be overwritten by the seed script.
-  -- It will only use the seed data if the database currently has NULL.
-  image_url = COALESCE(destinations.image_url, EXCLUDED.image_url),
+  -- However, we use NULLIF to ensure empty strings ('') are treated as NULL and overwritten.
+  image_url = COALESCE(NULLIF(destinations.image_url, ''), EXCLUDED.image_url),
   vibes = COALESCE(destinations.vibes, EXCLUDED.vibes),
   activities = COALESCE(destinations.activities, EXCLUDED.activities);
 
@@ -103,11 +103,15 @@ ON CONFLICT (hub_name) DO UPDATE SET
 ALTER TABLE saved_itineraries 
   ADD COLUMN IF NOT EXISTS cache_key CHAR(64),
   ADD COLUMN IF NOT EXISTS budget VARCHAR(50),
+  ADD COLUMN IF NOT EXISTS budget_basis VARCHAR(50),
   ADD COLUMN IF NOT EXISTS travel_group VARCHAR(100),
   ADD COLUMN IF NOT EXISTS accommodation VARCHAR(50),
   ADD COLUMN IF NOT EXISTS dietary VARCHAR(200),
   ADD COLUMN IF NOT EXISTS notes TEXT,
   ADD COLUMN IF NOT EXISTS expires_at TIMESTAMP;
+
+-- 4b. Widen hub_name to support multi-destination joined names (e.g. "Cebu, Boracay, Siargao")
+ALTER TABLE saved_itineraries ALTER COLUMN hub_name TYPE VARCHAR(1000);
 
 -- 5. Safe column additions for destinations (for existing databases)
 --    CREATE TABLE IF NOT EXISTS won't add new columns if the table already exists.

@@ -19,15 +19,17 @@ export const validateBody = (schema) => (req, res, next) => {
 };
 
 export const generateSchema = z.object({
-  region: z.string().max(100).optional(),
-  hub: z.string().min(1).max(100),
+  destinations: z.array(z.object({
+    region: z.string().min(1).max(100),
+    hub: z.string().min(1).max(100),
+  })).min(1).max(5),
   duration: z.number().int().min(1).max(30),
-  purpose: z.string().max(500).optional(),
-  pace: z.string().max(100).optional(),
-  budget: z.string().max(100).optional(),
-  budgetBasis: z.string().max(100).optional(),
+  purpose: z.string().max(100).optional(),
+  pace: z.string().max(50).optional(),
+  budget: z.string().max(50).optional(),
+  budgetBasis: z.string().max(50).optional(),
   travelGroup: z.string().max(100).optional(),
-  accommodation: z.string().max(100).optional(),
+  accommodation: z.string().max(50).optional(),
   dietary: z.string().max(200).optional(),
   notes: z.string().max(500).optional(),
 });

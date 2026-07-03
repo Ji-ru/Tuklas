@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import type { Variants } from 'framer-motion';
 import PlanHero from '../components/plan/PlanHero';
-import RegionSelector, { hubOptions } from '../components/plan/RegionSelector';
+import RegionSelector, { hubOptions, type DestinationEntry } from '../components/plan/RegionSelector';
 import DurationPicker from '../components/plan/DurationPicker';
 import BudgetSelector from '../components/plan/BudgetSelector';
 import VibePicker from '../components/plan/VibePicker';
@@ -24,22 +24,29 @@ export default function PlanPage() {
   const [searchParams] = useSearchParams();
   const prefilledHub = searchParams.get('hub');
 
-  // Region state
-  const [region, setRegion] = useState(() => {
+  // Destinations state (supports multiple)
+  const [destinations, setDestinations] = useState<DestinationEntry[]>(() => {
+    const generateId = () => Math.random().toString(36).substring(2, 11);
     if (prefilledHub) {
       for (const [reg, hubs] of Object.entries(hubOptions)) {
-        if (hubs.includes(prefilledHub)) {
-          return reg;
+        const matchedHub = hubs.find(h => h.toLowerCase().includes(prefilledHub.toLowerCase()));
+        if (matchedHub) {
+          return [{ id: generateId(), region: reg, hub: matchedHub }];
         }
       }
     }
-    return 'visayas';
+    return [{ id: generateId(), region: 'visayas', hub: 'Cebu (City, Moalboal, Bantayan)' }];
   });
-  const [hub, setHub] = useState(prefilledHub || 'Cebu (City, Moalboal, Bantayan)');
 
   // Date state
-  const [startDate, setStartDate] = useState(() => new Date().toISOString().split('T')[0]);
-  const [endDate, setEndDate] = useState(() => new Date(Date.now() + 4 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]);
+  const [startDate, setStartDate] = useState(() => {
+    const d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  });
+  const [endDate, setEndDate] = useState(() => {
+    const d = new Date(Date.now() + 4 * 24 * 60 * 60 * 1000);
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  });
 
   // Budget state
   const [budgetBasis, setBudgetBasis] = useState<'per-day' | 'duration'>('per-day');
@@ -85,14 +92,11 @@ export default function PlanPage() {
     );
   };
 
-  // Fix #3: Validate date range before submitting
-  const isDateValid = endDate > startDate;
-
   // Calculate duration synchronously for UI logic
   const start = new Date(startDate);
   const end = new Date(endDate);
-  const diffTime = Math.abs(end.getTime() - start.getTime());
-  const durationDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) || 1;
+  const diffTime = end.getTime() - start.getTime();
+  const durationDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
 
   const handleGenerate = async () => {
     setErrorMsg(null);
@@ -119,8 +123,7 @@ export default function PlanPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          region,
-          hub,
+          destinations,
           duration: durationDays,
           purpose: selectedVibes.join(', '),
           pace: selectedPace,
@@ -152,7 +155,7 @@ export default function PlanPage() {
       <PlanHero />
 
       {/* Glass Form Panel overlapping hero */}
-      <div className="relative -mt-8 md:-mt-20 z-20 px-5 md:px-auto max-w-[1200px] mx-auto w-full px-5 pb-lg md:pb-xl">
+      <div className="relative -mt-8 md:-mt-20 z-20 max-w-[1200px] mx-auto w-full px-5 pb-lg md:pb-xl">
         <motion.div 
           variants={formVariants}
           initial="hidden"
@@ -162,7 +165,7 @@ export default function PlanPage() {
 
           {/* Fix #4: Loading Overlay */}
           {loading && (
-            <div className="absolute inset-0 rounded-3xl z-30 flex flex-col items-center justify-center gap-4 bg-surface/80 backdrop-blur-sm">
+            <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center gap-4 bg-surface/80 backdrop-blur-sm">
               <div className="relative w-16 h-16">
                 <div className="absolute inset-0 rounded-full border-4 border-secondary-container border-t-secondary animate-spin" />
                 <span
@@ -181,24 +184,6 @@ export default function PlanPage() {
             </div>
           )}
 
-          {/* Fix #5: In-page Error Banner */}
-          {errorMsg && (
-            <div className="flex items-start gap-3 p-4 rounded-xl bg-error-container text-on-error-container border border-error/20 animate-in fade-in duration-300">
-              <span className="material-symbols-outlined mt-0.5 flex-shrink-0" style={{ fontVariationSettings: "'FILL' 1", fontSize: '20px' }}>
-                error
-              </span>
-              <div className="flex-1">
-                <p className="font-label-md text-label-md font-bold">Something went wrong</p>
-                <p className="font-body-md text-sm mt-0.5">{errorMsg}</p>
-              </div>
-              <button
-                onClick={() => setErrorMsg(null)}
-                className="text-on-error-container/60 hover:text-on-error-container transition-colors flex-shrink-0"
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>close</span>
-              </button>
-            </div>
-          )}
 
           {/* Step 01 — Row 1: Region + Duration */}
           <motion.div variants={formItem}>
@@ -207,10 +192,8 @@ export default function PlanPage() {
             </p>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-lg lg:gap-xl">
               <RegionSelector
-                selected={region}
-                onSelect={setRegion}
-                hub={hub}
-                onHubChange={setHub}
+                destinations={destinations}
+                onChange={setDestinations}
               />
               <DurationPicker
                 startDate={startDate}
@@ -268,11 +251,30 @@ export default function PlanPage() {
           <motion.hr variants={formItem} className="border-surface-variant" />
 
           {/* Generate CTA */}
-          <motion.div variants={formItem} className="pt-sm">
+          <motion.div variants={formItem} className="pt-sm space-y-4">
+            {/* Fix #5: In-page Error Banner moved closer to button */}
+            {errorMsg && (
+              <div className="flex items-start gap-3 p-4 rounded-xl bg-error-container text-on-error-container border border-error/20 animate-in fade-in duration-300 max-w-md mx-auto">
+                <span className="material-symbols-outlined mt-0.5 flex-shrink-0" style={{ fontVariationSettings: "'FILL' 1", fontSize: '20px' }}>
+                  error
+                </span>
+                <div className="flex-1 text-left">
+                  <p className="font-label-md text-label-md font-bold">Something went wrong</p>
+                  <p className="font-body-md text-sm mt-0.5">{errorMsg}</p>
+                </div>
+                <button
+                  onClick={() => setErrorMsg(null)}
+                  className="text-on-error-container/60 hover:text-on-error-container transition-colors flex-shrink-0"
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>close</span>
+                </button>
+              </div>
+            )}
+            
             <div className="text-center mb-4">
               <button
                 onClick={handleGenerate}
-                disabled={loading || !isDateValid}
+                disabled={loading}
                 className="cta-glow bg-primary text-on-primary font-headline-md text-headline-md py-3 px-10 rounded-xl w-full md:w-auto inline-flex items-center justify-center gap-3 border-t border-white/20 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>
