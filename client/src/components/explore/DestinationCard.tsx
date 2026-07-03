@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import { HUB_IMAGES, HUB_VIBES } from '../../lib/destination-data';
 
 export interface Destination {
   id: number;
@@ -10,6 +9,8 @@ export interface Destination {
   is_hidden_gem: boolean;
   description: string;
   image_url: string;
+  vibes: string[];
+  activities: string[];
 }
 
 interface Props {
@@ -18,9 +19,8 @@ interface Props {
 }
 
 export default function DestinationCard({ destination, onClick }: Props) {
-  // Prioritize the frontend static map because DB Unsplash links might be broken
-  const imageUrl = HUB_IMAGES[destination.hub_name] || destination.image_url;
-  const vibes = HUB_VIBES[destination.hub_name] || [];
+  const imageUrl = destination.image_url;
+  const vibes = destination.vibes || [];
 
   return (
     <div 

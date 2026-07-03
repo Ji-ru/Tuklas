@@ -12,6 +12,7 @@ export default function ExplorePage() {
   const [destinations, setDestinations] = useState<Destination[]>([]);
   const [activeFilter, setActiveFilter] = useState<FilterType>('All');
   const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -62,6 +63,10 @@ export default function ExplorePage() {
     fetchDestinations();
   }, []);
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeFilter, searchQuery]);
+
   const filterByRegion = activeFilter === 'All' 
     ? destinations 
     : activeFilter === 'Hidden Gems'
@@ -75,6 +80,13 @@ export default function ExplorePage() {
         d.region_name?.toLowerCase().includes(searchQuery.toLowerCase())
       )
     : filterByRegion;
+
+  const ITEMS_PER_PAGE = 12;
+  const totalPages = Math.ceil(filteredDestinations.length / ITEMS_PER_PAGE);
+  const currentDestinations = filteredDestinations.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
 
   const filters: FilterType[] = ['All', 'Luzon', 'Visayas', 'Mindanao', 'Hidden Gems'];
 
@@ -204,7 +216,7 @@ export default function ExplorePage() {
               animate="show"
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
             >
-              {filteredDestinations.map(dest => (
+              {currentDestinations.map(dest => (
                 <motion.div variants={item} key={dest.id}>
                   <DestinationCard 
                     destination={dest} 
@@ -214,6 +226,61 @@ export default function ExplorePage() {
               ))}
             </motion.div>
             
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="flex flex-col md:flex-row justify-between items-center mt-12 mb-8 gap-4 px-2">
+                <p className="font-body-md text-on-surface-variant/80 font-medium">
+                  {(() => {
+                    const startCount = (currentPage - 1) * ITEMS_PER_PAGE + 1;
+                    const endCount = Math.min(currentPage * ITEMS_PER_PAGE, filteredDestinations.length);
+                    return `Showing ${startCount}-${endCount} out of ${filteredDestinations.length}`;
+                  })()}
+                </p>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => {
+                      setCurrentPage(p => Math.max(1, p - 1));
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    disabled={currentPage === 1}
+                    className="w-10 h-10 rounded-full flex items-center justify-center border border-outline-variant text-on-surface hover:bg-surface-variant disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+                  >
+                    <span className="material-symbols-outlined">chevron_left</span>
+                  </button>
+                  
+                  <div className="flex gap-1">
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                      <button
+                        key={page}
+                        onClick={() => {
+                          setCurrentPage(page);
+                          window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }}
+                        className={`w-10 h-10 rounded-full flex items-center justify-center font-label-lg transition-all ${
+                          currentPage === page 
+                            ? 'bg-primary text-on-primary shadow-md' 
+                            : 'text-on-surface-variant hover:bg-surface-variant'
+                        }`}
+                      >
+                        {page}
+                      </button>
+                    ))}
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      setCurrentPage(p => Math.min(totalPages, p + 1));
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    disabled={currentPage === totalPages}
+                    className="w-10 h-10 rounded-full flex items-center justify-center border border-outline-variant text-on-surface hover:bg-surface-variant disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+                  >
+                    <span className="material-symbols-outlined">chevron_right</span>
+                  </button>
+                </div>
+              </div>
+            )}
+
             {filteredDestinations.length === 0 && (
               <div className="text-center py-20 text-on-surface-variant">
                 <span className="material-symbols-outlined text-6xl mb-4 opacity-40 block">travel_explore</span>

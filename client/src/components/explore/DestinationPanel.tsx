@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom';
 import { createPortal } from 'react-dom';
 import { type Destination } from './DestinationCard';
-import { HUB_IMAGES, HUB_VIBES, HUB_ACTIVITIES } from '../../lib/destination-data';
 
 interface Props {
   destination: Destination | null;
@@ -10,9 +9,9 @@ interface Props {
 }
 
 export default function DestinationPanel({ destination, isOpen, onClose }: Props) {
-  const imageUrl = destination ? (HUB_IMAGES[destination.hub_name] || destination.image_url) : '';
-  const vibes = destination ? (HUB_VIBES[destination.hub_name] || []) : [];
-  const activities = destination ? (HUB_ACTIVITIES[destination.hub_name] || []) : [];
+  const imageUrl = destination?.image_url || '';
+  const vibes = destination?.vibes || [];
+  const activities = destination?.activities || [];
 
   // Use a portal to render outside the main layout's stacking context,
   // so the panel correctly overlaps the z-50 global Header

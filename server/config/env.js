@@ -8,6 +8,7 @@ const envSchema = z.object({
   NODE_ENV: z.string().default('development'),
   DATABASE_URL: z.string().url('DATABASE_URL must be a valid URL'),
   GEMINI_API_KEY: z.string().min(1, 'GEMINI_API_KEY is required'),
+  PLACES_API_NEW: z.string().optional().default(''),
   ALLOWED_ORIGINS: z.string().default('http://localhost:5173,http://localhost:4173'),
 });
 
